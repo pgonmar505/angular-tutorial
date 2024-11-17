@@ -23,20 +23,28 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      # Setup nodejs
       - name: Setup nodejs
         uses: actions/setup-node@v4.1.0
 
-      - name: Install dependences
-        run: npm install
+      # Install dependencies
+      - name: Install deps
+        run: npm i
 
-      - name: Build Angular APP
+      # Build app bunlde
+      - name: Build app bundle
         run: npm run build:prod
 
-      - name: Deploy Githun page
+      # Route file renaming
+      - name: Rename index for routing
+        run: mv dist/browser/index.csr.html dist/browser/index.html
+      # Deploy GitHub pages
+      - name: Deploy GitHub pages
         uses: crazy-max/ghaction-github-pages@v4.1.0
         with:
-          build_dir: dist/angular-ci/browser
+          build_dir: dist/browser
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
