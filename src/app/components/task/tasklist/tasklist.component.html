@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Listado de Tareas</h3>
+      </div>
+      <div class="col-md-12">
+        <div class="list-group">
+          <!-- Cada tarea es un ítem dentro del grupo -->
+          <div class="list-group-item" *ngFor="let task of taskList" [ngClass]="{
+            'list-group-item-danger': task.priority === 'H',
+            'list-group-item-warning': task.priority === 'M',
+            'list-group-item-success': task.priority === 'L'
+          }">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+              <h5>
+                <i *ngIf="(task.priority === 'L' || task.priority === 'M') && task.status != 'C'" 
+                   class="bi bi-arrow-up-circle-fill me-1"></i>
+                <i *ngIf="(task.priority === 'M' || task.priority === 'H') && task.status != 'C'" 
+                   class="bi bi-arrow-down-circle-fill me-1"></i>
+                {{ task.name }}
+              </h5>
+              <small>
+                <i *ngIf="task.status === 'P'" class="bi bi-play-fill me-1"></i>
+                <i *ngIf="task.status === 'IP'" class="bi bi-check-lg me-1"></i>
+                <i *ngIf="task.status === 'C'" class="bi bi-arrow-return-right me-1"></i>
+                {{ task.status === 'P' ? 'Pendiente' : task.status === 'IP' ? 'En proceso' : 'Completada' }}
+              </small>
+            </div>
+            <!-- Descripción -->
+            <p class="mb-1">{{ task.description }}</p>
+            <div class="d-flex w-100 justify-content-between align-items-center">
+              <!-- Fecha -->
+              <small>Expira: {{ task.expirationDate | date: 'shortDate' }}</small>
+              <!-- Acciones -->
+              <div>
+                <i class="bi bi-pencil-square me-3" title="Editar"></i>
+                <i class="bi bi-trash" title="Eliminar"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
