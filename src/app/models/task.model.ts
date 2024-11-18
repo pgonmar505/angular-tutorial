@@ -50,28 +50,6 @@ export class Task {
         }
     }
     
-    raisePriority(){
-        switch(this.priority){
-          case TaskPriority.LOW: this.priority=TaskPriority.MEDIUM;break;
-          case TaskPriority.MEDIUM: this.priority=TaskPriority.HIGH;break;
-        }
-    }
-    
-    lowerPriority(){
-        switch(this.priority){
-            case TaskPriority.MEDIUM: this.priority=TaskPriority.LOW;break;
-            case TaskPriority.HIGH: this.priority=TaskPriority.MEDIUM;break;
-        }
-    }
-
-    changeStatus(){
-        switch(this.status){
-            case TaskStatus.COMPLETED: this.status=TaskStatus.IN_PROGRESS;break;
-            case TaskStatus.IN_PROGRESS: this.status=TaskStatus.COMPLETED;break;
-            case TaskStatus.PENDING: this.status=TaskStatus.IN_PROGRESS;break;
-
-        }
-    }
     getPriorityColor(): string{
         switch(this.priority){
             case TaskPriority.HIGH : return "red";break;

@@ -34,6 +34,22 @@ export class TasklistComponent implements OnInit {
       task.priority =TaskPriority.LOW;
   }
 
+  delete(task: Task):void {
+    task.isDelete = true;
+  }
+
+  changeState(task: Task){
+    if (task.status === TaskStatus.COMPLETED) {
+      task.status = TaskStatus.PENDING
+    }
+    else if (task.status === TaskStatus.IN_PROGRESS) {
+      task.status = TaskStatus.COMPLETED
+    }
+    else if (task.status === TaskStatus.PENDING) {
+      task.status = TaskStatus.IN_PROGRESS
+    }
+  }
+
   ngOnInit(): void {
     this.taskList = [
       new Task(1, "Tarea 1", "Descripción Tarea 1", TaskPriority.LOW, TaskStatus.PENDING, new Date("11/1/2024"), new Date("11/18/2024"), false),
