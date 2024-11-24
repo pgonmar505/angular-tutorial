@@ -1,67 +1,71 @@
 import { Component, OnInit } from '@angular/core';
 import { Task, TaskPriority, TaskStatus } from '../../../models/task.model';
 import { CommonModule } from '@angular/common';
+import { take } from 'rxjs';
+import { TaskresumeComponent } from '../taskresume/taskresume.component';
+import { TaskEvent } from '../../../models/taskevent.model';
 
 @Component({
   selector: 'app-tasklist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TaskresumeComponent],
   templateUrl: './tasklist.component.html',
-  styleUrls: ['./tasklist.component.css']
+  styleUrl: './tasklist.component.css'
 })
-export class TasklistComponent implements OnInit {
-  taskList: Task[] = [];
-  mensaje: string = '';
-
-  mostrarMensaje() {
-    this.mensaje = '¡Botón clicado!';
-  }
-
-  incrementPriority(task: Task): void {
-    // Cambiar la prioridad a un nivel superior si es posible
-    if (task.priority === TaskPriority.LOW) {
-      task.priority = TaskPriority.MEDIUM;
-    } else if (task.priority === TaskPriority.MEDIUM) {
-      task.priority = TaskPriority.HIGH;
-    }
-  }
-
-  decrementPriority(task: Task):void {
-    if (task.priority === TaskPriority.HIGH) {
-      task.priority = TaskPriority.MEDIUM;
-    }
-    else if (task.priority === TaskPriority.MEDIUM)
-      task.priority =TaskPriority.LOW;
-  }
-
-  delete(task: Task):void {
-    task.isDelete = true;
-  }
-
-  changeState(task: Task){
-    if (task.status === TaskStatus.COMPLETED) {
-      task.status = TaskStatus.PENDING
-    }
-    else if (task.status === TaskStatus.IN_PROGRESS) {
-      task.status = TaskStatus.COMPLETED
-    }
-    else if (task.status === TaskStatus.PENDING) {
-      task.status = TaskStatus.IN_PROGRESS
-    }
-  }
-
+export class TasklistComponent implements OnInit{
+  taskList:Task[] = [];
+  
   ngOnInit(): void {
-    this.taskList = [
-      new Task(1, "Tarea 1", "Descripción Tarea 1", TaskPriority.LOW, TaskStatus.PENDING, new Date("11/1/2024"), new Date("11/18/2024"), false),
-      new Task(2, "Tarea 2", "Descripción Tarea 2", TaskPriority.HIGH, TaskStatus.IN_PROGRESS, new Date("11/5/2024"), new Date("11/16/2024"), false),
-      new Task(3, "Tarea 3", "Descripción Tarea 3", TaskPriority.LOW, TaskStatus.IN_PROGRESS, new Date("11/21/2024"), new Date("11/30/2024"), false),
-      new Task(4, "Tarea 4", "Descripción Tarea 4", TaskPriority.HIGH, TaskStatus.COMPLETED, new Date("11/8/2024"), new Date("11/21/2024"), false),
-      new Task(5, "Tarea 5", "Descripción Tarea 5", TaskPriority.MEDIUM, TaskStatus.PENDING, new Date("11/10/2024"), new Date("11/30/2024"), false),
-      new Task(6, "Tarea 6", "Descripción Tarea 6", TaskPriority.LOW, TaskStatus.PENDING, new Date("11/15/2024"), new Date("11/25/2024"), true),
-      new Task(7, "Tarea 7", "Descripción Tarea 7", TaskPriority.HIGH, TaskStatus.IN_PROGRESS, new Date("11/20/2024"), new Date("11/30/2024"), false),
-      new Task(8, "Tarea 8", "Descripción Tarea 8", TaskPriority.MEDIUM, TaskStatus.COMPLETED, new Date("11/25/2024"), new Date("11/30/2024"), true),
-      new Task(9, "Tarea 9", "Descripción Tarea 9", TaskPriority.LOW, TaskStatus.PENDING, new Date("11/1/2024"), new Date("11/30/2024"), false),
-      new Task(10, "Tarea 10", "Descripción Tarea 10", TaskPriority.HIGH, TaskStatus.COMPLETED, new Date("11/1/2024"), new Date("11/30/2024"), false),
-    ];
+    let task1:Task = new Task (1,"Tarea 1", "Descripción Tarea 1",TaskPriority.LOW,TaskStatus.PENDING,new Date("11/1/2024"),new Date("11/18/2024"),false);
+    let task2:Task = new Task (2,"Tarea 2", "Descripción Tarea 2",TaskPriority.HIGH,TaskStatus.IN_PROGRESS,new Date("11/5/2024"),new Date("11/16/2024"),false);
+    let task3:Task = new Task (3,"Tarea 3", "Descripción Tarea 3",TaskPriority.LOW,TaskStatus.IN_PROGRESS,new Date("11/21/2024"),new Date("11/30/2024"),false);
+    let task4:Task = new Task (4,"Tarea 4", "Descripción Tarea 4",TaskPriority.HIGH,TaskStatus.COMPLETED,new Date("11/8/2024"),new Date("11/21/2024"),true);
+    let task5:Task = new Task (5,"Tarea 5", "Descripción Tarea 5",TaskPriority.MEDIUM,TaskStatus.PENDING,new Date("11/10/2024"),new Date("11/30/2024"),false);
+    this.taskList = [task1,task2,task3,task4,task5];
+  }
+
+  modifyTask(taskEvent: TaskEvent) {
+    switch (taskEvent.action) {
+        case "raiseTaskPriority":
+            this.raiseTaskPriority(taskEvent.taskId);
+            break;
+        case "lowerTaskPriority":
+            this.lowerTaskPriority(taskEvent.taskId);
+            break;
+        case "changeTaskStatus":
+            this.changeTaskStatus(taskEvent.taskId);
+            break;
+        case "deleteTask":
+            this.deleteTask(taskEvent.taskId); // Manejar el evento deleteTask
+            break;
+        default:
+            console.log("Unknown action:", taskEvent.action);
+    }
+}
+
+  getTask(taskId:number):Task[]{
+    return this.taskList.filter((tarea:Task)=>{
+      return tarea.id == taskId;
+    });
+  }
+
+  raiseTaskPriority(taskId:number){
+    let tarea:Task = this.getTask(taskId)[0];
+    tarea.raisePriority();
+  }
+
+  lowerTaskPriority(taskId:number){
+    let tarea:Task = this.getTask(taskId)[0];
+    tarea.lowerPriority();
+  }
+  changeTaskStatus(taskId:number){
+    let tarea:Task = this.getTask(taskId)[0];
+    tarea.changeStatus();
+  }
+  editTask(taskId:number){
+   console.log(`Editing Task with identify ${taskId}`);
+  }
+  deleteTask(taskId: number) {
+    this.taskList = this.taskList.filter(task => task.id !== taskId);
   }
 }
